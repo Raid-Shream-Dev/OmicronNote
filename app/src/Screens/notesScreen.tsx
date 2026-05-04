@@ -1,32 +1,30 @@
 import { router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { ScrollView, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { BottomNav } from "../Navigation/bottomNav";
 import { HeaderProfile } from "../Landing/header";
 import landingStyles from "../Landing/style";
+import { BottomNav } from "../Navigation/bottomNav";
 import { AddNote } from "../Notes/Components/addNote";
 import { NoteHeader } from "../Notes/Components/noteHeader";
 import { NoteList } from "../Notes/Components/noteList";
 import noteStyles from "../Notes/Components/style";
 import {
-  NOTE_FOLDERS,
-  NOTE_LABELS,
-  NOTE_SORT_OPTIONS,
   Note,
   NoteFolder,
   NoteLabel,
   NoteSortOption,
 } from "../features/notes/model/noteModel";
-import { isRTL } from "../i18n";
 import {
   deleteNote,
   duplicateNote,
   togglePinNote,
 } from "../features/notes/state/notesSlice";
+import { isRTL } from "../i18n";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+import screenStyles from "./style";
 
 const profileImage = require("../../../assets/images/icon.png");
 type QuickFilter = "all" | "pinned" | "locked" | "checklist";
@@ -126,8 +124,10 @@ export function NotesScreen() {
         item.text.toLowerCase().includes(normalizedQuery),
       );
 
-    const matchesLabel = activeLabel === "All" || note.labels.includes(activeLabel);
-    const matchesFolder = activeFolder === "All" || note.folder === activeFolder;
+    const matchesLabel =
+      activeLabel === "All" || note.labels.includes(activeLabel);
+    const matchesFolder =
+      activeFolder === "All" || note.folder === activeFolder;
 
     const matchesQuickFilter =
       quickFilter === "all" ||
@@ -162,10 +162,10 @@ export function NotesScreen() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <SafeAreaView style={landingStyles.safeArea}>
         <View style={landingStyles.phoneShell}>
-          <View style={{ flex: 1 }}>
+          <View style={screenStyles.screenBody}>
             <ScrollView
               contentContainerStyle={landingStyles.content}
               keyboardShouldPersistTaps="handled"
@@ -176,24 +176,12 @@ export function NotesScreen() {
                 profileImage={profileImage}
                 resumeRoute="/notes"
               />
-              <View style={[noteStyles.screenIntro, rtl && noteStyles.screenIntroRtl]}>
-                <Text
-                  style={[
-                    noteStyles.screenEyebrow,
-                    rtl ? noteStyles.textRtl : noteStyles.textLtr,
-                  ]}
-                >
-                  {t("notes:introEyebrow")}
-                </Text>
-                <Text
-                  style={[
-                    noteStyles.screenDescription,
-                    rtl ? noteStyles.textRtl : noteStyles.textLtr,
-                  ]}
-                >
-                  {t("notes:introDescription")}
-                </Text>
-              </View>
+              <View
+                style={[
+                  noteStyles.screenIntro,
+                  rtl && noteStyles.screenIntroRtl,
+                ]}
+              ></View>
               <View style={landingStyles.previewPanel}>
                 <NoteHeader
                   noteCount={notes.length}
@@ -208,159 +196,6 @@ export function NotesScreen() {
                   onClearSearch={() => setQuery("")}
                   inputRef={searchInputRef}
                 />
-                <View style={noteStyles.controlsCard}>
-                  <View style={noteStyles.controlsGroup}>
-                    <Text
-                      style={[
-                        noteStyles.controlsLabel,
-                        rtl ? noteStyles.textRtl : noteStyles.textLtr,
-                      ]}
-                    >
-                      {t("notes:quickFilters")}
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={noteStyles.chipsScrollContent}
-                    >
-                      {(["all", "pinned", "locked", "checklist"] as QuickFilter[]).map(
-                        (filterOption) => (
-                          <Pressable
-                            key={filterOption}
-                            onPress={() => setQuickFilter(filterOption)}
-                            style={[
-                              noteStyles.chip,
-                              quickFilter === filterOption && noteStyles.chipActive,
-                            ]}
-                          >
-                            <Text
-                              style={[
-                                noteStyles.chipText,
-                                quickFilter === filterOption &&
-                                  noteStyles.chipTextActive,
-                              ]}
-                            >
-                              {t(`notes:${getQuickFilterLabelKey(filterOption)}`)}
-                            </Text>
-                          </Pressable>
-                        ),
-                      )}
-                    </ScrollView>
-                  </View>
-
-                  <View style={noteStyles.controlsGroup}>
-                    <Text
-                      style={[
-                        noteStyles.controlsLabel,
-                        rtl ? noteStyles.textRtl : noteStyles.textLtr,
-                      ]}
-                    >
-                      {t("notes:sortNotes")}
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={noteStyles.chipsScrollContent}
-                    >
-                      {NOTE_SORT_OPTIONS.map((option) => (
-                        <Pressable
-                          key={option}
-                          onPress={() => setSortOption(option)}
-                          style={[
-                            noteStyles.chip,
-                            sortOption === option && noteStyles.chipActive,
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              noteStyles.chipText,
-                              sortOption === option && noteStyles.chipTextActive,
-                            ]}
-                          >
-                            {t(`notes:${getSortLabelKey(option)}`)}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </ScrollView>
-                  </View>
-
-                  <View style={noteStyles.controlsGroup}>
-                    <Text
-                      style={[
-                        noteStyles.controlsLabel,
-                        rtl ? noteStyles.textRtl : noteStyles.textLtr,
-                      ]}
-                    >
-                      {t("notes:labelsTitle")}
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={noteStyles.chipsScrollContent}
-                    >
-                      {(["All", ...NOTE_LABELS] as const).map((labelOption) => (
-                        <Pressable
-                          key={labelOption}
-                          onPress={() => setActiveLabel(labelOption)}
-                          style={[
-                            noteStyles.chip,
-                            activeLabel === labelOption && noteStyles.chipActive,
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              noteStyles.chipText,
-                              activeLabel === labelOption && noteStyles.chipTextActive,
-                            ]}
-                          >
-                            {t(`notes:${getLabelKey(labelOption)}`)}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </ScrollView>
-                  </View>
-
-                  <View
-                    style={[
-                      noteStyles.controlsGroup,
-                      noteStyles.controlsGroupLast,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        noteStyles.controlsLabel,
-                        rtl ? noteStyles.textRtl : noteStyles.textLtr,
-                      ]}
-                    >
-                      {t("notes:foldersTitle")}
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={noteStyles.chipsScrollContent}
-                    >
-                      {(["All", ...NOTE_FOLDERS] as const).map((folderOption) => (
-                        <Pressable
-                          key={folderOption}
-                          onPress={() => setActiveFolder(folderOption)}
-                          style={[
-                            noteStyles.chip,
-                            activeFolder === folderOption && noteStyles.chipActive,
-                          ]}
-                        >
-                          <Text
-                            style={[
-                              noteStyles.chipText,
-                              activeFolder === folderOption && noteStyles.chipTextActive,
-                            ]}
-                          >
-                            {t(`notes:${getFolderLabelKey(folderOption)}`)}
-                          </Text>
-                        </Pressable>
-                      ))}
-                    </ScrollView>
-                  </View>
-                </View>
 
                 <NoteList
                   recentNotes={recentNotes}

@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   Image,
@@ -9,6 +10,7 @@ import {
 } from "react-native";
 import { isRTL, toggleAppLanguage } from "../i18n";
 import type { AppResumeRoute } from "../i18n";
+import { theme } from "../Theme/color";
 import style from "./style";
 
 type HeaderProfileProps = {
@@ -41,7 +43,7 @@ export function HeaderProfile({
           }}
           style={[style.languageToggle, rtl && style.languageToggleRtl]}
         >
-          <Feather name="globe" size={16} color="#111111" />
+          <Feather name="globe" size={16} color={theme.surface} />
           <Text
             style={[
               style.languageToggleText,
@@ -52,12 +54,15 @@ export function HeaderProfile({
           </Text>
         </Pressable>
 
-        <Pressable style={style.iconButton}>
-          <Feather name="search" size={20} color="#111111" />
+        <Pressable onPress={() => router.push("/notes")} style={style.iconButton}>
+          <Feather name="search" size={20} color={theme.ink} />
         </Pressable>
 
-        <Pressable style={style.iconButton}>
-          <Feather name="more-horizontal" size={20} color="#111111" />
+        <Pressable
+          onPress={() => router.push("/settings")}
+          style={style.iconButton}
+        >
+          <Feather name="more-horizontal" size={20} color={theme.ink} />
         </Pressable>
       </View>
     </View>

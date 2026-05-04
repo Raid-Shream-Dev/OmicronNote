@@ -1,5 +1,5 @@
 import { isRTL } from "../../i18n";
-import { colors } from "@/app/src/Theme/color";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 import { RefObject } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
@@ -35,7 +35,7 @@ export function AddTask({
         multiline
         numberOfLines={3}
         placeholder={t("composerPlaceholder")}
-        placeholderTextColor={colors.atractive}
+        placeholderTextColor={theme.inkMuted}
         style={[styles.textInput, rtl && styles.textInputRtl]}
         value={value}
         onChangeText={onChangeText}

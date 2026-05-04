@@ -3,35 +3,31 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  addTask,
+  deleteTask,
+  toggleTask,
+} from "../features/tasks/state/tasksSlice";
 import { isRTL } from "../i18n";
 import { HeaderProfile } from "../Landing/header";
 import landingStyles from "../Landing/style";
 import { BottomNav } from "../Navigation/bottomNav";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { AddTask } from "../Tasks/Components/AddTask";
 import styles from "../Tasks/Components/style";
 import { TaskHeader } from "../Tasks/Components/taskHeader";
 import { TaskList } from "../Tasks/Components/taskList";
-import { Tasks } from "../Tasks/Components/types";
+import screenStyles from "./style";
 
 const profileImage = require("../../../assets/images/icon.png");
-
-function createTask(title: string): Tasks {
-  return {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    title,
-    completed: false,
-  };
-}
 
 export function TasksScreen() {
   const { t, i18n } = useTranslation(["landing", "tasks"]);
   const rtl = isRTL(i18n.resolvedLanguage);
   const [taskTitle, setTaskTitle] = useState("");
   const inputRef = useRef<TextInput>(null);
-  const [tasks, setTasks] = useState<Tasks[]>([
-    createTask(t("tasks:sampleTaskReview")),
-    createTask(t("tasks:sampleTaskPlan")),
-  ]);
+  const tasks = useAppSelector((state) => state.tasks.items);
+  const dispatch = useAppDispatch();
   const completedCount = tasks.filter((task) => task.completed).length;
 
   function handleAddTask() {
@@ -39,20 +35,16 @@ export function TasksScreen() {
     if (!trimmedTaskTitle) {
       return;
     }
-    setTasks((currentTasks) => [createTask(trimmedTaskTitle), ...currentTasks]);
+    dispatch(addTask(trimmedTaskTitle));
     setTaskTitle("");
   }
 
   function handleToggleTask(id: string) {
-    setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
-    );
+    dispatch(toggleTask(id));
   }
 
   function handleDeleteTask(id: string) {
-    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+    dispatch(deleteTask(id));
   }
 
   function handleFocusComposer() {
@@ -61,10 +53,10 @@ export function TasksScreen() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <SafeAreaView style={landingStyles.safeArea}>
         <View style={landingStyles.phoneShell}>
-          <View style={{ flex: 1 }}>
+          <View style={screenStyles.screenBody}>
             <ScrollView
               contentContainerStyle={landingStyles.content}
               keyboardShouldPersistTaps="handled"
@@ -83,14 +75,6 @@ export function TasksScreen() {
                   ]}
                 >
                   {t("tasks:introEyebrow")}
-                </Text>
-                <Text
-                  style={[
-                    styles.screenDescription,
-                    rtl ? landingStyles.textRtl : landingStyles.textLtr,
-                  ]}
-                >
-                  {t("tasks:introDescription")}
                 </Text>
               </View>
               <View style={landingStyles.previewPanel}>

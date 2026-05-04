@@ -1,8 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import { router, usePathname } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import type { AppResumeRoute } from "../i18n";
+import { theme } from "../Theme/color";
+import styles from "./style";
 
 const bottomNavItems: {
   key: AppResumeRoute;
@@ -45,7 +47,7 @@ export function BottomNav() {
             <Feather
               name={item.icon}
               size={18}
-              color={isActive ? "#111111" : "#8c8c8c"}
+              color={isActive ? theme.surface : theme.inkMuted}
             />
             <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
               {
@@ -64,37 +66,3 @@ export function BottomNav() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    paddingHorizontal: 12,
-    paddingTop: 12,
-    paddingBottom: 16,
-    borderTopWidth: 1,
-    borderTopColor: "#ececec",
-    backgroundColor: "#fbfbfb",
-  },
-  tabButton: {
-    minWidth: 72,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 6,
-    paddingVertical: 6,
-    borderRadius: 18,
-  },
-  tabButtonActive: {
-    backgroundColor: "#f4f4f5",
-  },
-  tabLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "#8c8c8c",
-  },
-  tabLabelActive: {
-    color: "#111111",
-    fontWeight: "700",
-  },
-});

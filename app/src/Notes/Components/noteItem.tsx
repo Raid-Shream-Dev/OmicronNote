@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { isRTL } from "../../i18n";
 import { getNotePreview, Note } from "../../features/notes/model/noteModel";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 
 type NoteItemProps = {
@@ -13,26 +14,30 @@ type NoteItemProps = {
   onTogglePinNote: (id: string) => void;
   variant?: "recent" | "default";
 };
+
 const folderTranslationKey = {
   Inbox: "folderInbox",
   Homework: "folderHomework",
   Workout: "folderWorkout",
   Projects: "folderProjects",
 } as const;
+
 const labelTranslationKey = {
   Personal: "labelPersonal",
   Work: "labelWork",
   Study: "labelStudy",
   Ideas: "labelIdeas",
 } as const;
+
 const typeTranslationKey = {
   text: "typeText",
   checklist: "typeChecklist",
 } as const;
+
 const coverStyles = {
-  sunrise: { backgroundColor: "#fef3c7", emoji: "Ã°Å¸Å’Â¤" },
-  ocean: { backgroundColor: "#dbeafe", emoji: "Ã°Å¸Å’Å " },
-  forest: { backgroundColor: "#dcfce7", emoji: "Ã°Å¸Å’Â¿" },
+  sunrise: { backgroundColor: theme.atractive, emoji: "\uD83C\uDF24" },
+  ocean: { backgroundColor: theme.primary, emoji: "\uD83C\uDF0A" },
+  forest: { backgroundColor: theme.panel, emoji: "\uD83C\uDF3F" },
 } as const;
 
 export function NoteItem({
@@ -61,7 +66,9 @@ export function NoteItem({
       ]}
     >
       <View style={[styles.noteTopRow, rtl && styles.noteTopRowRtl]}>
-        <View style={[styles.coverCard, { backgroundColor: coverStyle.backgroundColor }]}>
+        <View
+          style={[styles.coverCard, { backgroundColor: coverStyle.backgroundColor }]}
+        >
           <Text style={styles.coverEmoji}>{coverStyle.emoji}</Text>
         </View>
         <View style={[styles.noteMain, rtl && styles.noteMainRtl]}>
@@ -89,22 +96,22 @@ export function NoteItem({
             style={styles.iconButton}
           >
             <Feather
-              name={note.pinned ? "bookmark" : "bookmark"}
+              name="bookmark"
               size={16}
-              color={note.pinned ? "#111111" : "#8c8c8c"}
+              color={note.pinned ? theme.atractive : theme.inkMuted}
             />
           </Pressable>
           <Pressable
             onPress={() => onDuplicateNote(note.id)}
             style={styles.iconButton}
           >
-            <Feather name="copy" size={16} color="#8c8c8c" />
+            <Feather name="copy" size={16} color={theme.inkMuted} />
           </Pressable>
           <Pressable
             onPress={() => onDeleteNote(note.id)}
             style={styles.iconButton}
           >
-            <Feather name="trash-2" size={16} color="#b91c1c" />
+            <Feather name="trash-2" size={16} color={theme.danger} />
           </Pressable>
         </View>
       </View>
@@ -121,7 +128,9 @@ export function NoteItem({
           </View>
         ) : null}
         <View style={styles.metaBadge}>
-          <Text style={styles.metaBadgeText}>{t("updatedOn", { date: updatedLabel })}</Text>
+          <Text style={styles.metaBadgeText}>
+            {t("updatedOn", { date: updatedLabel })}
+          </Text>
         </View>
       </View>
       <View style={[styles.labelRow, rtl && styles.labelRowRtl]}>

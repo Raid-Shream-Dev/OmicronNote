@@ -1,5 +1,5 @@
-import { Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
 import { isRTL } from "../../i18n";
 import styles from "./style";
 
@@ -20,18 +20,26 @@ export function NoteHeader({
 
   return (
     <View style={[styles.headerCard, rtl && styles.headerCardRtl]}>
-      <Text style={[styles.headerEyebrow, rtl ? styles.textRtl : styles.textLtr]}>
+      <Text
+        style={[styles.headerEyebrow, rtl ? styles.textRtl : styles.textLtr]}
+      >
         {t("headerEyebrow")}
-      </Text>
-      <Text style={[styles.headerTitle, rtl ? styles.textRtl : styles.textLtr]}>
-        {t("headerTitle")}
       </Text>
       <Text style={[styles.headerCount, rtl ? styles.textRtl : styles.textLtr]}>
         {noteCount} {noteLabel}
       </Text>
-      <Text style={[styles.headerHint, rtl ? styles.textRtl : styles.textLtr]}>
-        {t("headerHint", { pinned: pinnedCount, recent: recentCount })}
-      </Text>
+      <View style={[styles.headerStatRow, rtl && styles.headerStatRowRtl]}>
+        <View style={styles.headerStatPill}>
+          <Text style={styles.headerStatText}>
+            {t("summaryPinned", { count: pinnedCount })}
+          </Text>
+        </View>
+        <View style={styles.headerStatPill}>
+          <Text style={styles.headerStatText}>
+            {t("summaryRecent", { count: recentCount })}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }

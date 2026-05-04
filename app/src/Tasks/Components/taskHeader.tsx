@@ -31,6 +31,18 @@ export function TaskHeader({ taskCount, completedCount }: TaskHeaderProps) {
           remaining: remainingCount,
         })}
       </Text>
+      <View style={[styles.taskStatRow, rtl && styles.taskStatRowRtl]}>
+        <View style={styles.taskStatPill}>
+          <Text style={styles.taskStatText}>
+            {t("summaryDone", { count: completedCount })}
+          </Text>
+        </View>
+        <View style={styles.taskStatPill}>
+          <Text style={styles.taskStatText}>
+            {t("summaryLeft", { count: remainingCount })}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }

@@ -1,8 +1,9 @@
-import { RefObject } from "react";
 import { Feather } from "@expo/vector-icons";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { RefObject } from "react";
 import { useTranslation } from "react-i18next";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { isRTL } from "../../i18n";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 
 type AddNoteProps = {
@@ -25,18 +26,17 @@ export function AddNote({
 
   return (
     <View style={[styles.addNoteCard, rtl && styles.addNoteCardRtl]}>
-      <Text style={[styles.addNoteTitle, rtl ? styles.textRtl : styles.textLtr]}>
+      <Text
+        style={[styles.addNoteTitle, rtl ? styles.textRtl : styles.textLtr]}
+      >
         {t("searchTitle")}
       </Text>
-      <Text style={[styles.addNoteSubtitle, rtl ? styles.textRtl : styles.textLtr]}>
-        {t("searchSubtitle")}
-      </Text>
       <View style={[styles.searchInputRow, rtl && styles.searchInputRowRtl]}>
-        <Feather name="search" size={18} color="#8c8c8c" />
+        <Feather name="search" size={18} color={theme.inkMuted} />
         <TextInput
           ref={inputRef}
           placeholder={t("searchPlaceholder")}
-          placeholderTextColor="#8c8c8c"
+          placeholderTextColor={theme.inkMuted}
           style={[styles.searchInput, rtl ? styles.textRtl : styles.textLtr]}
           value={query}
           onChangeText={onChangeQuery}
@@ -45,7 +45,10 @@ export function AddNote({
       <View style={[styles.actionRow, rtl && styles.actionRowRtl]}>
         <Pressable onPress={onCreateNote} style={styles.primaryButton}>
           <Text
-            style={[styles.primaryButtonText, rtl ? styles.textRtl : styles.textLtr]}
+            style={[
+              styles.primaryButtonText,
+              rtl ? styles.textRtl : styles.textLtr,
+            ]}
           >
             {t("newNote")}
           </Text>

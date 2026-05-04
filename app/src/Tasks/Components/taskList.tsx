@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { isRTL } from "../../i18n";
 import { Tasks } from "./types";
 import TaskItem from "./taskItem";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 
 type TaskListProps = {
@@ -36,7 +37,7 @@ export function TaskList({
     return (
       <View style={[styles.emptyState, rtl && styles.emptyStateRtl]}>
         <View style={styles.emptyIcon}>
-          <Feather name="clipboard" size={24} color="#fff461" />
+          <Feather name="clipboard" size={24} color={theme.atractive} />
         </View>
         <Text style={[styles.emptyTitle, rtl ? styles.textRtl : styles.textLtr]}>
           {t("emptyTitle")}

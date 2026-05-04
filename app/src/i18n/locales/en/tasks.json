@@ -12,6 +12,8 @@
   "taskLabel_one": "task",
   "taskLabel_other": "tasks",
   "taskSummary": "{{completed}} completed, {{remaining}} still on deck",
+  "summaryDone": "{{count}} done",
+  "summaryLeft": "{{count}} left",
   "statusCompleted": "Completed",
   "statusPending": "Pending",
   "deleteTask": "Delete {{title}}",

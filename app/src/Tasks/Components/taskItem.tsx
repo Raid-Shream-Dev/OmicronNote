@@ -3,6 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { isRTL } from "../../i18n";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 import type { Tasks } from "./types";
 
@@ -31,7 +32,7 @@ export default function TaskItem({
           task.completed && styles.checkboxCompleted,
         ]}
       >
-        {task.completed ? <Feather name="check" size={16} color="#101010" /> : null}
+        {task.completed ? <Feather name="check" size={16} color={theme.surface} /> : null}
       </Pressable>
       <View style={[styles.taskBody, rtl && styles.taskBodyRtl]}>
         <Text
@@ -52,7 +53,7 @@ export default function TaskItem({
         onPress={() => onDeleteTask(task.id)}
         style={styles.deleteButton}
       >
-        <Feather name="trash-2" size={18} color="#f5f5f5" />
+        <Feather name="trash-2" size={18} color={theme.ink} />
       </Pressable>
     </View>
   );
