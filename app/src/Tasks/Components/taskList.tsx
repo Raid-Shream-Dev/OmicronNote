@@ -1,10 +1,3 @@
-/**
- * Student Guide:
- * This file renders the task list area and the task empty state.
- * It receives task data and callbacks from the parent screen, then decides whether to show
- * the task cards or the friendly empty state.
- * This is a good example of keeping display branching inside a presentational list component.
- */
 import React from "react";
 import { Feather } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
@@ -12,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { isRTL } from "../../i18n";
 import { Tasks } from "./types";
 import TaskItem from "./taskItem";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 
 type TaskListProps = {
@@ -27,10 +21,8 @@ export function TaskList({
   onDeleteTask,
   onFocusComposer,
 }: TaskListProps) {
-  // Reads task translations so the empty state matches the selected language.
   const { t, i18n } = useTranslation("tasks");
   const rtl = isRTL(i18n.resolvedLanguage);
-  // Prebuild the task cards so the main return stays easy to read.
   const taskItems = taskListItems.map(function renderTask(item) {
     return (
       <TaskItem
@@ -41,13 +33,11 @@ export function TaskList({
       />
     );
   });
-
-  // Empty state gives the screen a friendly starting point before tasks exist.
   if (taskListItems.length === 0) {
     return (
       <View style={[styles.emptyState, rtl && styles.emptyStateRtl]}>
         <View style={styles.emptyIcon}>
-          <Feather name="clipboard" size={24} color="#fff461" />
+          <Feather name="clipboard" size={24} color={theme.atractive} />
         </View>
         <Text style={[styles.emptyTitle, rtl ? styles.textRtl : styles.textLtr]}>
           {t("emptyTitle")}
@@ -63,8 +53,6 @@ export function TaskList({
       </View>
     );
   }
-
-  // Once tasks exist, render them as a simple vertical stack of cards.
   return (
     <View style={styles.listContent}>{taskItems}</View>
   );

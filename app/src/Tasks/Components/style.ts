@@ -1,308 +1,290 @@
-/**
- * Student Guide:
- * This file contains the task feature style sheet.
- * It covers the task intro area, summary header, composer, task cards, and empty state.
- * It also contains shared text-direction helpers used by multiple task components.
- * Comparing this file with the notes style file shows how each feature owns its own visual layer.
- */
-import { colors } from "@/app/src/Theme/color";
 import { StyleSheet } from "react-native";
+import { theme } from "../../Theme/color";
 
 export default StyleSheet.create({
-  // Outer safe-area background around the tasks screen shell.
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: theme.background,
     paddingHorizontal: 14,
     paddingVertical: 10,
   },
-  // Main dark card that contains the full task experience.
   phoneShell: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: theme.surface,
     borderRadius: 32,
     overflow: "hidden",
     paddingHorizontal: 18,
     paddingTop: 18,
   },
-  // Extra room at the bottom so content does not feel cramped when scrolled.
   screenScrollContent: {
     paddingBottom: 28,
   },
-  // Top navigation row for back navigation and screen context.
   topBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 18,
   },
-  // Shared circular icon button style used in the top bar.
   iconButton: {
     width: 42,
     height: 42,
-    borderRadius: 21,
-    backgroundColor: colors.surfaceMuted,
+    borderRadius: 14,
+    backgroundColor: theme.panelElevated,
     alignItems: "center",
     justifyContent: "center",
   },
-  // Secondary label centered between the top bar actions.
   topBarLabel: {
-    color: colors.textMuted,
+    color: theme.inkMuted,
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "700",
   },
-  // Intro block placed under the shared landing header.
   screenIntro: {
-    marginTop: 18,
-    marginBottom: 12,
-    gap: 6,
+    marginTop: 20,
+    marginBottom: 18,
+    gap: 8,
   },
-  // Mirrors the intro block alignment for RTL languages.
   screenIntroRtl: {
     alignItems: "flex-end",
   },
-  // Small label introducing the task section.
   screenEyebrow: {
-    color: "#8c8c8c",
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 1,
+    color: theme.atractive,
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 0,
     textTransform: "uppercase",
   },
-  // Short description beneath the intro label.
   screenDescription: {
-    color: "#111111",
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: "500",
+    color: theme.ink,
+    fontSize: 22,
+    lineHeight: 31,
+    fontWeight: "900",
   },
-  // Card styling for each individual task row.
   taskCard: {
-    backgroundColor: "#fcfcfc",
+    backgroundColor: theme.panelElevated,
     padding: 16,
-    borderRadius: 20,
+    borderRadius: 17,
     marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
-    gap: 12,
+    gap: 13,
     borderWidth: 1,
-    borderColor: "#f0f0f0",
+    borderColor: theme.border,
+    borderLeftWidth: 5,
+    borderLeftColor: theme.primary,
   },
-  // Flips the task row so actions read naturally in RTL layouts.
   taskCardRtl: {
     flexDirection: "row-reverse",
+    borderLeftWidth: 1,
+    borderRightWidth: 5,
+    borderRightColor: theme.primary,
   },
-  // Base task title styling before completion state overrides.
   taskTitle: {
     fontSize: 17,
-    fontWeight: "600",
-    color: "#111111",
+    fontWeight: "900",
+    color: theme.ink,
   },
-  // Spacing for the heading block at the top of the screen.
   taskHeader: {
-    gap: 4,
+    gap: 8,
     marginBottom: 18,
+    backgroundColor: theme.primary,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: theme.atractive,
+    padding: 18,
   },
-  // Aligns the summary block to the right for RTL languages.
   taskHeaderRtl: {
     alignItems: "flex-end",
   },
-  // Small accent label above the main screen title.
   sectionEyebrow: {
-    color: "#8c8c8c",
-    fontSize: 13,
-    fontWeight: "700",
-    letterSpacing: 1,
+    color: theme.atractive,
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 0,
     textTransform: "uppercase",
   },
-  // Main title style for the tasks screen.
   screenTitle: {
-    color: "#111111",
-    fontSize: 28,
-    fontWeight: "600",
+    color: theme.ink,
+    fontSize: 32,
+    fontWeight: "900",
   },
-  // Summary line that shows how many tasks are present.
   taskMeta: {
-    color: "#111111",
+    color: theme.ink,
     fontSize: 17,
-    fontWeight: "500",
+    fontWeight: "900",
   },
-  // Supporting text for progress information under the summary.
   taskHint: {
-    color: "#8c8c8c",
+    color: theme.ink,
     fontSize: 14,
     lineHeight: 20,
+    fontWeight: "700",
   },
-  // Container for the add-task input and action button.
-  composerCard: {
-    backgroundColor: "#fcfcfc",
-    borderRadius: 24,
-    padding: 16,
+  taskStatRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 4,
+  },
+  taskStatRowRtl: {
+    flexDirection: "row-reverse",
+  },
+  taskStatPill: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: "#f0f0f0",
-    marginBottom: 20,
+    borderColor: theme.border,
   },
-  // Aligns the composer section to the right in RTL.
+  taskStatText: {
+    color: theme.atractive,
+    fontSize: 12,
+    fontWeight: "900",
+  },
+  composerCard: {
+    backgroundColor: theme.panel,
+    borderRadius: 18,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: theme.border,
+    marginBottom: 18,
+  },
   composerCardRtl: {
     alignItems: "flex-end",
   },
-  // Title text inside the composer card.
   composerTitle: {
-    color: "#111111",
-    fontSize: 18,
-    fontWeight: "600",
+    color: theme.ink,
+    fontSize: 19,
+    fontWeight: "900",
     marginBottom: 4,
   },
-  // Helper text under the composer heading.
   composerSubtitle: {
-    color: "#8c8c8c",
+    color: theme.inkMuted,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 14,
+    fontWeight: "700",
   },
-  // Multi-line input styling for new task text.
   textInput: {
-    backgroundColor: "#f8f8f8",
-    color: "#111111",
-    padding: 14,
-    borderRadius: 16,
+    backgroundColor: theme.surface,
+    color: theme.ink,
+    padding: 15,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "#ececec",
+    borderColor: theme.border,
     minHeight: 92,
     textAlignVertical: "top",
     fontSize: 16,
   },
-  // Makes the multi-line task input start from the right in RTL.
   textInputRtl: {
     textAlign: "right",
     writingDirection: "rtl",
   },
-  // Primary button styling for adding a task.
   addButton: {
-    backgroundColor: "#111111",
+    backgroundColor: theme.atractive,
     alignItems: "center",
-    borderRadius: 16,
-    paddingVertical: 14,
-    marginTop: 12,
+    borderRadius: 14,
+    paddingVertical: 15,
+    marginTop: 14,
   },
-  // Disabled button state when the input is empty.
   addButtonDisabled: {
-    backgroundColor: "#b8b8b8",
+    backgroundColor: theme.border,
   },
-  // Text styling inside the add button.
   addButtonText: {
-    color: "#ffffff",
-    fontWeight: "700",
+    color: theme.surface,
+    fontWeight: "900",
     fontSize: 15,
   },
-  // Wrapper for the rendered list of task cards.
   listContent: {
     flexGrow: 1,
     paddingBottom: 10,
   },
-  // Aligns the empty state content to the right in RTL.
   emptyStateRtl: {
     alignItems: "flex-end",
   },
-  // Centered empty state card shown before any tasks are added.
   emptyState: {
-    backgroundColor: "#fcfcfc",
-    borderRadius: 24,
+    backgroundColor: theme.panel,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#f0f0f0",
-    paddingHorizontal: 18,
-    paddingVertical: 28,
+    borderColor: theme.border,
+    paddingHorizontal: 22,
+    paddingVertical: 30,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 8,
   },
-  // Decorative icon container used in the empty state.
   emptyIcon: {
     width: 56,
     height: 56,
-    borderRadius: 28,
-    backgroundColor: "#f4f4f5",
+    borderRadius: 16,
+    backgroundColor: theme.primary,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 14,
   },
-  // Empty state headline.
   emptyTitle: {
-    color: "#111111",
+    color: theme.ink,
     fontSize: 20,
-    fontWeight: "700",
+    fontWeight: "900",
     marginBottom: 6,
   },
-  // Supporting copy for the empty state.
   emptySubtitle: {
-    color: "#8c8c8c",
+    color: theme.inkMuted,
     fontSize: 14,
     lineHeight: 21,
     textAlign: "center",
     marginBottom: 18,
   },
-  // Call-to-action button inside the empty state.
   emptyButton: {
-    backgroundColor: "#111111",
+    backgroundColor: theme.atractive,
     paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 999,
+    paddingVertical: 13,
+    borderRadius: 13,
   },
-  // Text inside the empty state call-to-action.
   emptyButtonText: {
-    color: "#ffffff",
-    fontWeight: "700",
+    color: theme.surface,
+    fontWeight: "900",
   },
-  // Circular checkbox shown at the start of each task row.
   checkbox: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: "#111111",
+    width: 30,
+    height: 30,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderColor: theme.atractive,
     alignItems: "center",
     justifyContent: "center",
   },
-  // Visual treatment for completed tasks.
   checkboxCompleted: {
-    backgroundColor: "#111111",
-    borderColor: "#111111",
+    backgroundColor: theme.atractive,
+    borderColor: theme.atractive,
   },
-  // Holds the task title and status text between the actions.
   taskBody: {
     flex: 1,
     gap: 4,
   },
-  // Keeps the task text block anchored to the right in RTL layouts.
   taskBodyRtl: {
     alignItems: "flex-end",
   },
-  // Strikethrough styling applied after a task is completed.
   taskTitleCompleted: {
     textDecorationLine: "line-through",
-    color: "#8c8c8c",
+    color: theme.inkMuted,
   },
-  // Small label showing whether a task is pending or completed.
   taskStatus: {
-    color: "#8c8c8c",
+    color: theme.inkMuted,
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: "800",
   },
-  // Dedicated delete action at the end of each task row.
   deleteButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "#111111",
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: theme.primaryMuted,
     alignItems: "center",
     justifyContent: "center",
   },
-  // Shared left-to-right text helper for task content.
   textLtr: {
     textAlign: "left",
     writingDirection: "ltr",
   },
-  // Shared right-to-left text helper for task content.
   textRtl: {
     textAlign: "right",
     writingDirection: "rtl",

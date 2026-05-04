@@ -1,108 +1,72 @@
-/**
- * Student Guide:
- * This file is the tasks screen for the to-do part of the app.
- * It owns temporary task UI state, renders the task summary and task list,
- * and reuses the shared app shell and bottom navigation.
- * Reading this screen beside `notesScreen.tsx` is a good way to compare two different feature styles.
- */
 import { StatusBar } from "expo-status-bar";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  addTask,
+  deleteTask,
+  toggleTask,
+} from "../features/tasks/state/tasksSlice";
 import { isRTL } from "../i18n";
 import { HeaderProfile } from "../Landing/header";
 import landingStyles from "../Landing/style";
 import { BottomNav } from "../Navigation/bottomNav";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { AddTask } from "../Tasks/Components/AddTask";
 import styles from "../Tasks/Components/style";
 import { TaskHeader } from "../Tasks/Components/taskHeader";
 import { TaskList } from "../Tasks/Components/taskList";
-import { Tasks } from "../Tasks/Components/types";
+import screenStyles from "./style";
 
 const profileImage = require("../../../assets/images/icon.png");
 
-function createTask(title: string): Tasks {
-  // Generates a unique id for each task so list keys stay stable.
-  return {
-    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    title,
-    completed: false,
-  };
-}
-
 export function TasksScreen() {
-  // Reads the task namespace so the task screen can show translated copy.
   const { t, i18n } = useTranslation(["landing", "tasks"]);
   const rtl = isRTL(i18n.resolvedLanguage);
-
-  // Holds the text currently being typed into the task composer.
   const [taskTitle, setTaskTitle] = useState("");
-  // Allows the empty state button to focus the text input.
   const inputRef = useRef<TextInput>(null);
-  // Starts the screen with a couple of sample tasks for immediate feedback.
-  const [tasks, setTasks] = useState<Tasks[]>([
-    // Seeds the list with translated sample tasks so both languages look complete.
-    createTask(t("tasks:sampleTaskReview")),
-    createTask(t("tasks:sampleTaskPlan")),
-  ]);
-
-  // Calculates completed tasks for the header summary.
+  const tasks = useAppSelector((state) => state.tasks.items);
+  const dispatch = useAppDispatch();
   const completedCount = tasks.filter((task) => task.completed).length;
 
   function handleAddTask() {
     const trimmedTaskTitle = taskTitle.trim();
-
-    // Ignore empty submissions so only meaningful tasks are added.
     if (!trimmedTaskTitle) {
       return;
     }
-
-    // Appends the new task and clears the input for the next one.
-    setTasks((currentTasks) => [createTask(trimmedTaskTitle), ...currentTasks]);
+    dispatch(addTask(trimmedTaskTitle));
     setTaskTitle("");
   }
 
   function handleToggleTask(id: string) {
-    // Flips the completed state for the tapped task.
-    setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task,
-      ),
-    );
+    dispatch(toggleTask(id));
   }
 
   function handleDeleteTask(id: string) {
-    // Removes a task completely from the list.
-    setTasks((currentTasks) => currentTasks.filter((task) => task.id !== id));
+    dispatch(deleteTask(id));
   }
 
   function handleFocusComposer() {
-    // Moves the cursor into the input when the empty state CTA is pressed.
     inputRef.current?.focus();
   }
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <SafeAreaView style={landingStyles.safeArea}>
         <View style={landingStyles.phoneShell}>
-          {/* Splits the task screen into scrollable content and a fixed bottom navigation bar. */}
-          <View style={{ flex: 1 }}>
+          <View style={screenStyles.screenBody}>
             <ScrollView
               contentContainerStyle={landingStyles.content}
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
-              {/* Reuses the same profile header pattern from the landing screen. */}
               <HeaderProfile
                 name={t("profileName")}
                 profileImage={profileImage}
-                // Tells the shared language toggle to restore the task screen after an RTL/LTR reload.
                 resumeRoute="/tasks"
               />
-
-              {/* Mirrors the landing screen with a lightweight section intro. */}
               <View style={[styles.screenIntro, rtl && styles.screenIntroRtl]}>
                 <Text
                   style={[
@@ -112,17 +76,7 @@ export function TasksScreen() {
                 >
                   {t("tasks:introEyebrow")}
                 </Text>
-                <Text
-                  style={[
-                    styles.screenDescription,
-                    rtl ? landingStyles.textRtl : landingStyles.textLtr,
-                  ]}
-                >
-                  {t("tasks:introDescription")}
-                </Text>
               </View>
-
-              {/* Uses the landing-style preview panel as the main content surface. */}
               <View style={landingStyles.previewPanel}>
                 <TaskHeader
                   taskCount={tasks.length}
@@ -142,7 +96,6 @@ export function TasksScreen() {
                 />
               </View>
             </ScrollView>
-            {/* Adds section-level tab navigation so users can jump between screens quickly. */}
             <BottomNav />
           </View>
         </View>

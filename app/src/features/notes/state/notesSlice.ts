@@ -1,27 +1,14 @@
-/**
- * Student Guide:
- * This file contains the Redux slice for the notes feature.
- * It owns the note collection state and all note mutations such as add, update,
- * delete, duplicate, pin, lock, and checklist updates.
- * In this project, the slice is the single source of truth for note data in memory.
- * If a screen changes note data, it should usually do so through actions from this file.
- */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-// Imports the note domain model from the notes feature instead of a UI components folder.
 import {
   createEntityId,
   createNoteDraft,
   Note,
   NoteChecklistItem,
 } from "../model/noteModel";
-
-// Describes the Redux state owned by the notes feature.
 type NotesState = {
   items: Note[];
   hydrated: boolean;
 };
-
-// Seeds the app with a few realistic notes so the notes experience is useful on first launch.
 const sampleNotes: Note[] = [
   createNoteDraft({
     id: "note-sample-1",
@@ -64,47 +51,36 @@ const sampleNotes: Note[] = [
     updatedAt: "2026-04-06T20:10:00.000Z",
   }),
 ];
-
-// Provides a predictable initial state before device storage hydration completes.
 const initialState: NotesState = {
   items: sampleNotes,
   hydrated: false,
 };
-
-// Refreshes the updated timestamp whenever a note changes.
 function withUpdatedTimestamp(note: Note) {
   return {
     ...note,
     updatedAt: new Date().toISOString(),
   };
 }
-
-// Centralizes every note mutation so list and detail screens stay in sync.
 const notesSlice = createSlice({
   name: "notes",
   initialState,
   reducers: {
-    // Replaces the initial sample notes with the notes restored from device storage.
     hydrateNotes: (state, action: PayloadAction<Note[] | null>) => {
       state.items =
         action.payload && action.payload.length > 0 ? action.payload : sampleNotes;
       state.hydrated = true;
     },
-    // Adds a new note record to the start of the collection.
     addNote: (state, action: PayloadAction<Note>) => {
       state.items.unshift(action.payload);
     },
-    // Saves all field changes coming from the note detail editor.
     updateNote: (state, action: PayloadAction<Note>) => {
       state.items = state.items.map((note) =>
         note.id === action.payload.id ? withUpdatedTimestamp(action.payload) : note,
       );
     },
-    // Deletes a note permanently by id.
     deleteNote: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((note) => note.id !== action.payload);
     },
-    // Creates a copy of an existing note so users can reuse a note as a template.
     duplicateNote: (state, action: PayloadAction<string>) => {
       const sourceNote = state.items.find((note) => note.id === action.payload);
 
@@ -126,7 +102,6 @@ const notesSlice = createSlice({
         }),
       );
     },
-    // Toggles the pin state so important notes can stay at the top.
     togglePinNote: (state, action: PayloadAction<string>) => {
       state.items = state.items.map((note) =>
         note.id === action.payload
@@ -134,7 +109,6 @@ const notesSlice = createSlice({
           : note,
       );
     },
-    // Toggles the lock flag so locked-note filters have real data to work with.
     toggleLockNote: (state, action: PayloadAction<string>) => {
       state.items = state.items.map((note) =>
         note.id === action.payload
@@ -142,7 +116,6 @@ const notesSlice = createSlice({
           : note,
       );
     },
-    // Replaces the checklist rows for one note after checklist editing.
     updateChecklist: (
       state,
       action: PayloadAction<{ noteId: string; checklist: NoteChecklistItem[] }>,

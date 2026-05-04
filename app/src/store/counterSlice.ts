@@ -1,10 +1,3 @@
-/**
- * Student Guide:
- * This file is a simple Redux slice left from early project setup.
- * It demonstrates the core Redux Toolkit pattern: state, reducers, and exported actions.
- * Even if the counter feature is not central to the current app, it is still a useful learning example.
- * Students can compare this simple slice with the more advanced notes slice.
- */
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type CounterState = {

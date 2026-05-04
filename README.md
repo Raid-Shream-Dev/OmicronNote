@@ -1,12 +1,12 @@
 # OmicronNote
 
-OmicronNote is a learning-focused mobile productivity app built with Expo and React Native. It combines a note-taking workspace, a lightweight task screen, multilingual support, and a simple section-based navigation flow so students can study how a real app is organized without jumping into a huge codebase.
+OmicronNote is a mobile productivity app built with Expo and React Native. It combines a note-taking workspace, a lightweight task screen, multilingual support, and a simple section-based navigation flow in a compact, well-structured codebase.
 
 The project is designed to be readable first. It shows how to structure an Expo Router app, how to organize features, how to persist data on the device, and how to add localization with English and Arabic, including RTL support.
 
 ## Purpose of the App
 
-This app was built as a study project for learning modern React Native application structure and feature development. The goal is not only to ship screens, but also to demonstrate:
+This app was built as a structured React Native project for exploring modern application architecture and feature development. The goal is not only to ship screens, but also to demonstrate:
 
 - how a note feature grows from simple UI into a real state-driven workflow
 - how file-based routing works with Expo Router
@@ -72,7 +72,7 @@ This app was built as a study project for learning modern React Native applicati
 
 ### Expo
 
-Expo makes the project much easier to run and share, especially for students. It provides a modern React Native workflow with sensible defaults, development tools, and cross-platform support.
+Expo makes the project much easier to run and share. It provides a modern React Native workflow with sensible defaults, development tools, and cross-platform support.
 
 ### Expo Router
 
@@ -125,7 +125,6 @@ OmicronNote/
 │       ├── Tasks/
 │       └── Theme/
 ├── assets/
-├── STUDENT_GUIDE.md
 ├── package.json
 └── README.md
 ```
@@ -219,9 +218,9 @@ npm run web
 npm run lint
 ```
 
-## Educational Value
+## What This Project Demonstrates
 
-This repository is especially useful for students who want to study:
+This repository is useful if you want to study:
 
 - React Native screen composition
 - Expo Router navigation
@@ -230,8 +229,6 @@ This repository is especially useful for students who want to study:
 - translation and RTL handling
 - feature-first project structure
 - TypeScript in a mobile app
-
-Most source files also include teaching-style header comments to help explain their role in the app.
 
 ## Current Limitations
 
@@ -257,11 +254,11 @@ Possible future improvements include:
 
 This repository is a good fit for:
 
-- students learning React Native
+- developers learning React Native
 - developers studying Expo Router
 - beginners exploring Redux Toolkit in a real UI
 - anyone who wants a small but structured multilingual mobile app example
 
 ## Repository Summary
 
-OmicronNote is a student-friendly Expo React Native app that demonstrates how to build a multilingual productivity app with notes, tasks, settings, local persistence, and feature-based architecture. It is intentionally structured to be understandable, extendable, and useful as a learning reference.
+OmicronNote is an Expo React Native app that demonstrates how to build a multilingual productivity app with notes, tasks, settings, local persistence, and feature-based architecture. It is intentionally structured to be understandable and extendable.

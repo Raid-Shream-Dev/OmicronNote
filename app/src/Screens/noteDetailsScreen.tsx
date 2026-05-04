@@ -1,10 +1,3 @@
-/**
- * Student Guide:
- * This file is the note detail and note editor screen.
- * It handles both creating new notes and editing existing ones, based on the route params.
- * The screen owns temporary form state, while Redux owns the saved note collection.
- * This is one of the best files for studying how local form state and global app state work together.
- */
 import { Feather } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -14,7 +7,6 @@ import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 import landingStyles from "../Landing/style";
 import noteStyles from "../Notes/Components/style";
-// Imports note editor options and note-building helpers from the notes feature model layer.
 import {
   createEntityId,
   createNoteDraft,
@@ -23,15 +15,14 @@ import {
   NOTE_LABELS,
   NOTE_TEXT_STYLES,
   NOTE_TYPES,
-  NoteChecklistItem,
-  NoteCoverStyle,
-  NoteFolder,
-  NoteLabel,
-  NoteTextStyle,
-  NoteType,
+  type NoteChecklistItem,
+  type NoteCoverStyle,
+  type NoteFolder,
+  type NoteLabel,
+  type NoteTextStyle,
+  type NoteType,
 } from "../features/notes/model/noteModel";
 import { isRTL } from "../i18n";
-// Imports note actions from the notes feature state so editor logic stays feature-centered.
 import {
   addNote,
   deleteNote,
@@ -39,60 +30,43 @@ import {
   updateNote,
 } from "../features/notes/state/notesSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { theme } from "../Theme/color";
 
-// Reuses the same cover preview presets shown on note cards.
 const coverOptions = {
-  sunrise: { backgroundColor: "#fef3c7", emoji: "🌤" },
-  ocean: { backgroundColor: "#dbeafe", emoji: "🌊" },
-  forest: { backgroundColor: "#dcfce7", emoji: "🌿" },
+  sunrise: { backgroundColor: theme.atractive, emoji: "\uD83C\uDF24" },
+  ocean: { backgroundColor: theme.primary, emoji: "\uD83C\uDF0A" },
+  forest: { backgroundColor: theme.panel, emoji: "\uD83C\uDF3F" },
 } as const;
 
 export function NoteDetailsScreen() {
-  // Reads the note id from the route when opening an existing note from the list.
   const params = useLocalSearchParams<{ noteId?: string }>();
   const noteId = typeof params.noteId === "string" ? params.noteId : undefined;
-
-  // Reads the current language so the detail editor respects RTL layouts.
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("notes");
   const rtl = isRTL(i18n.resolvedLanguage);
-
-  // Finds the note currently being edited when the screen opens in edit mode.
   const existingNote = useAppSelector((state) =>
     state.notes.items.find((item) => item.id === noteId),
   );
   const dispatch = useAppDispatch();
-
-  // Holds the editable note title draft.
   const [title, setTitle] = useState(existingNote?.title ?? "");
-  // Holds the editable note body draft.
   const [content, setContent] = useState(existingNote?.content ?? "");
-  // Holds the current folder selection.
   const [folder, setFolder] = useState<NoteFolder>(existingNote?.folder ?? "Inbox");
-  // Holds the selected labels.
   const [labels, setLabels] = useState<NoteLabel[]>(existingNote?.labels ?? ["Personal"]);
-  // Holds the pin state while editing the note.
   const [pinned, setPinned] = useState(existingNote?.pinned ?? false);
-  // Holds the lock state while editing the note.
   const [locked, setLocked] = useState(existingNote?.locked ?? false);
-  // Holds the selected note content type.
   const [noteType, setNoteType] = useState<NoteType>(existingNote?.noteType ?? "text");
-  // Holds the selected visual formatting preset.
   const [textStyle, setTextStyle] = useState<NoteTextStyle>(
     existingNote?.textStyle ?? "plain",
   );
-  // Holds the selected cover preset for thumbnails and the detail header.
   const [coverStyle, setCoverStyle] = useState<NoteCoverStyle>(
     existingNote?.coverStyle ?? "sunrise",
   );
-  // Holds checklist rows when the note is a checklist note.
   const [checklist, setChecklist] = useState<NoteChecklistItem[]>(
     existingNote?.checklist ?? [],
   );
-  // Holds a new checklist row before it gets added to the list.
   const [checklistInput, setChecklistInput] = useState("");
+  const isReadOnly = Boolean(existingNote?.locked && locked);
 
   useEffect(() => {
-    // Syncs local editor state when the screen opens a different existing note.
     if (!existingNote) {
       return;
     }
@@ -110,10 +84,11 @@ export function NoteDetailsScreen() {
   }, [existingNote]);
 
   function handleToggleLabel(label: NoteLabel) {
-    // Adds or removes a label from the note without allowing the label list to become empty.
     setLabels((currentLabels) => {
       if (currentLabels.includes(label)) {
-        const nextLabels = currentLabels.filter((currentLabel) => currentLabel !== label);
+        const nextLabels = currentLabels.filter(
+          (currentLabel) => currentLabel !== label,
+        );
         return nextLabels.length > 0 ? nextLabels : currentLabels;
       }
 
@@ -123,13 +98,9 @@ export function NoteDetailsScreen() {
 
   function handleAddChecklistItem() {
     const trimmedChecklistInput = checklistInput.trim();
-
-    // Ignores blank checklist rows to keep stored checklist data clean.
-    if (!trimmedChecklistInput) {
+    if (!trimmedChecklistInput || isReadOnly) {
       return;
     }
-
-    // Adds a new checklist row and clears the checklist input field.
     setChecklist((currentChecklist) => [
       ...currentChecklist,
       { id: createEntityId("check"), text: trimmedChecklistInput, done: false },
@@ -138,7 +109,10 @@ export function NoteDetailsScreen() {
   }
 
   function handleToggleChecklistItem(itemId: string) {
-    // Flips the done state for the tapped checklist row.
+    if (isReadOnly) {
+      return;
+    }
+
     setChecklist((currentChecklist) =>
       currentChecklist.map((item) =>
         item.id === itemId ? { ...item, done: !item.done } : item,
@@ -147,17 +121,19 @@ export function NoteDetailsScreen() {
   }
 
   function handleDeleteChecklistItem(itemId: string) {
-    // Removes a checklist row from the note draft.
+    if (isReadOnly) {
+      return;
+    }
+
     setChecklist((currentChecklist) =>
       currentChecklist.filter((item) => item.id !== itemId),
     );
   }
 
   function handleSaveNote() {
-    // Builds the shared note payload from the current editor fields.
     const notePayload = createNoteDraft({
       id: existingNote?.id,
-      title: title.trim() || "Untitled note",
+      title: title.trim() || t("untitledNote"),
       content: content.trim(),
       folder,
       labels,
@@ -171,7 +147,6 @@ export function NoteDetailsScreen() {
       updatedAt: existingNote?.updatedAt,
     });
 
-    // Creates a new note when no note id exists, otherwise updates the existing note.
     if (existingNote) {
       dispatch(
         updateNote({
@@ -184,12 +159,10 @@ export function NoteDetailsScreen() {
       dispatch(addNote(notePayload));
     }
 
-    // Returns to the notes list after saving the note.
     router.replace("/notes");
   }
 
   function handleDuplicateNote() {
-    // Creates a copy of the current note and returns to the notes list.
     if (!existingNote) {
       return;
     }
@@ -199,7 +172,6 @@ export function NoteDetailsScreen() {
   }
 
   function handleDeleteNote() {
-    // Deletes the current note and returns to the notes list.
     if (!existingNote) {
       router.replace("/notes");
       return;
@@ -211,7 +183,7 @@ export function NoteDetailsScreen() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <SafeAreaView style={landingStyles.safeArea}>
         <View style={landingStyles.phoneShell}>
           <ScrollView
@@ -219,7 +191,6 @@ export function NoteDetailsScreen() {
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
-            {/* Provides back navigation and a save action for the note editor. */}
             <View style={[noteStyles.editorTopBar, rtl && noteStyles.editorTopBarRtl]}>
               <Pressable onPress={() => router.back()} style={noteStyles.secondaryButton}>
                 <Text
@@ -228,7 +199,7 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Back
+                  {t("back")}
                 </Text>
               </Pressable>
               <Pressable onPress={handleSaveNote} style={noteStyles.editorActionButton}>
@@ -238,17 +209,17 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Save note
+                  {t("saveNote")}
                 </Text>
               </Pressable>
             </View>
 
-            {/* Titles the screen based on whether the user is creating or editing a note. */}
-            <Text style={[noteStyles.editorTitle, rtl ? noteStyles.textRtl : noteStyles.textLtr]}>
-              {existingNote ? "Edit note" : "Create note"}
+            <Text
+              style={[noteStyles.editorTitle, rtl ? noteStyles.textRtl : noteStyles.textLtr]}
+            >
+              {existingNote ? t("editNote") : t("createNote")}
             </Text>
 
-            {/* Groups all editor sections into one scrollable note editing experience. */}
             <View style={noteStyles.editorContent}>
               <View style={noteStyles.editorCard}>
                 <Text
@@ -257,7 +228,7 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Cover preview
+                  {t("coverPreviewTitle")}
                 </Text>
                 <Text
                   style={[
@@ -265,12 +236,13 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Choose a visual cover so your note is easier to recognize in the list.
+                  {t("coverPreviewHint")}
                 </Text>
                 <View style={noteStyles.coverOptionsRow}>
                   {NOTE_COVER_STYLES.map((coverOption) => (
                     <Pressable
                       key={coverOption}
+                      disabled={isReadOnly}
                       onPress={() => setCoverStyle(coverOption)}
                       style={[
                         noteStyles.coverOption,
@@ -295,19 +267,21 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Basics
+                  {t("basicsTitle")}
                 </Text>
                 <TextInput
-                  placeholder="Note title"
-                  placeholderTextColor="#8c8c8c"
+                  editable={!isReadOnly}
+                  placeholder={t("noteTitlePlaceholder")}
+                  placeholderTextColor={theme.inkMuted}
                   style={[noteStyles.editorInput, rtl ? noteStyles.textRtl : noteStyles.textLtr]}
                   value={title}
                   onChangeText={setTitle}
                 />
                 <TextInput
+                  editable={!isReadOnly}
                   multiline
-                  placeholder="Write your note here"
-                  placeholderTextColor="#8c8c8c"
+                  placeholder={t("noteBodyPlaceholder")}
+                  placeholderTextColor={theme.inkMuted}
                   style={[
                     noteStyles.editorInput,
                     noteStyles.editorBodyInput,
@@ -325,7 +299,7 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Organization
+                  {t("organizationTitle")}
                 </Text>
                 <Text
                   style={[
@@ -333,13 +307,14 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Use folders, labels, pinning, and locking to keep note collections clean.
+                  {t("organizationHint")}
                 </Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View style={noteStyles.chipsScrollContent}>
                     {NOTE_FOLDERS.map((folderOption) => (
                       <Pressable
                         key={folderOption}
+                        disabled={isReadOnly}
                         onPress={() => setFolder(folderOption)}
                         style={[
                           noteStyles.chip,
@@ -366,11 +341,9 @@ export function NoteDetailsScreen() {
                       return (
                         <Pressable
                           key={label}
+                          disabled={isReadOnly}
                           onPress={() => handleToggleLabel(label)}
-                          style={[
-                            noteStyles.chip,
-                            isSelected && noteStyles.chipActive,
-                          ]}
+                          style={[noteStyles.chip, isSelected && noteStyles.chipActive]}
                         >
                           <Text
                             style={[
@@ -387,13 +360,14 @@ export function NoteDetailsScreen() {
                 </ScrollView>
                 <View style={noteStyles.actionRow}>
                   <Pressable
+                    disabled={isReadOnly}
                     onPress={() => setPinned((currentPinned) => !currentPinned)}
                     style={[noteStyles.chip, pinned && noteStyles.chipActive]}
                   >
                     <Text
                       style={[noteStyles.chipText, pinned && noteStyles.chipTextActive]}
                     >
-                      Pinned
+                      {t("filterPinned")}
                     </Text>
                   </Pressable>
                   <Pressable
@@ -403,10 +377,20 @@ export function NoteDetailsScreen() {
                     <Text
                       style={[noteStyles.chipText, locked && noteStyles.chipTextActive]}
                     >
-                      Locked
+                      {t("filterLocked")}
                     </Text>
                   </Pressable>
                 </View>
+                {isReadOnly ? (
+                  <Text
+                    style={[
+                      noteStyles.editorSectionHint,
+                      rtl ? noteStyles.textRtl : noteStyles.textLtr,
+                    ]}
+                  >
+                    {t("lockedReadOnlyHint")}
+                  </Text>
+                ) : null}
               </View>
 
               <View style={noteStyles.editorCard}>
@@ -416,7 +400,7 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Content tools
+                  {t("contentToolsTitle")}
                 </Text>
                 <Text
                   style={[
@@ -424,13 +408,14 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Switch between plain-text and checklist notes, then choose a formatting style.
+                  {t("contentToolsHint")}
                 </Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View style={noteStyles.chipsScrollContent}>
                     {NOTE_TYPES.map((typeOption) => (
                       <Pressable
                         key={typeOption}
+                        disabled={isReadOnly}
                         onPress={() => setNoteType(typeOption)}
                         style={[
                           noteStyles.chip,
@@ -454,6 +439,7 @@ export function NoteDetailsScreen() {
                     {NOTE_TEXT_STYLES.map((styleOption) => (
                       <Pressable
                         key={styleOption}
+                        disabled={isReadOnly}
                         onPress={() => setTextStyle(styleOption)}
                         style={[
                           noteStyles.chip,
@@ -482,18 +468,21 @@ export function NoteDetailsScreen() {
                       rtl ? noteStyles.textRtl : noteStyles.textLtr,
                     ]}
                   >
-                    Checklist
+                    {t("checklistTitle")}
                   </Text>
                   {checklist.map((item) => (
                     <View
                       key={item.id}
                       style={[noteStyles.checklistRow, rtl && noteStyles.checklistRowRtl]}
                     >
-                      <Pressable onPress={() => handleToggleChecklistItem(item.id)}>
+                      <Pressable
+                        disabled={isReadOnly}
+                        onPress={() => handleToggleChecklistItem(item.id)}
+                      >
                         <Feather
                           name={item.done ? "check-square" : "square"}
                           size={18}
-                          color="#111111"
+                          color={theme.atractive}
                         />
                       </Pressable>
                       <Text
@@ -505,27 +494,35 @@ export function NoteDetailsScreen() {
                       >
                         {item.text}
                       </Text>
-                      <Pressable onPress={() => handleDeleteChecklistItem(item.id)}>
-                        <Feather name="trash-2" size={16} color="#b91c1c" />
+                      <Pressable
+                        disabled={isReadOnly}
+                        onPress={() => handleDeleteChecklistItem(item.id)}
+                      >
+                        <Feather name="trash-2" size={16} color={theme.danger} />
                       </Pressable>
                     </View>
                   ))}
                   <TextInput
-                    placeholder="Add checklist item"
-                    placeholderTextColor="#8c8c8c"
+                    editable={!isReadOnly}
+                    placeholder={t("checklistPlaceholder")}
+                    placeholderTextColor={theme.inkMuted}
                     style={[noteStyles.editorInput, rtl ? noteStyles.textRtl : noteStyles.textLtr]}
                     value={checklistInput}
                     onChangeText={setChecklistInput}
                     onSubmitEditing={handleAddChecklistItem}
                   />
-                  <Pressable onPress={handleAddChecklistItem} style={noteStyles.primaryButton}>
+                  <Pressable
+                    disabled={isReadOnly}
+                    onPress={handleAddChecklistItem}
+                    style={noteStyles.primaryButton}
+                  >
                     <Text
                       style={[
                         noteStyles.primaryButtonText,
                         rtl ? noteStyles.textRtl : noteStyles.textLtr,
                       ]}
                     >
-                      Add checklist item
+                      {t("addChecklistItem")}
                     </Text>
                   </Pressable>
                 </View>
@@ -538,20 +535,17 @@ export function NoteDetailsScreen() {
                     rtl ? noteStyles.textRtl : noteStyles.textLtr,
                   ]}
                 >
-                  Actions
+                  {t("actionsTitle")}
                 </Text>
                 <View style={noteStyles.actionRow}>
-                  <Pressable
-                    onPress={handleDuplicateNote}
-                    style={noteStyles.secondaryButton}
-                  >
+                  <Pressable onPress={handleDuplicateNote} style={noteStyles.secondaryButton}>
                     <Text
                       style={[
                         noteStyles.secondaryButtonText,
                         rtl ? noteStyles.textRtl : noteStyles.textLtr,
                       ]}
                     >
-                      Duplicate note
+                      {t("duplicateNote")}
                     </Text>
                   </Pressable>
                   <Pressable onPress={handleDeleteNote} style={noteStyles.dangerButton}>
@@ -561,7 +555,7 @@ export function NoteDetailsScreen() {
                         rtl ? noteStyles.textRtl : noteStyles.textLtr,
                       ]}
                     >
-                      Delete note
+                      {t("deleteNote")}
                     </Text>
                   </Pressable>
                 </View>

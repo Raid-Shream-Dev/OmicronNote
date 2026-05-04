@@ -1,20 +1,17 @@
-/**
- * Student Guide:
- * This file renders the two-tab selection bar used on the landing screen.
- * It is a presentational component that only cares about which tab is active.
- * It reads translated labels and applies RTL-aware styles.
- * This is a good example of simple derived UI from a small prop.
- */
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { isRTL } from "../i18n";
 import styles from "./style";
 
 type SelectionBarProps = {
   activeTab: "allNotes" | "folders";
+  onChangeActiveTab: (tab: "allNotes" | "folders") => void;
 };
 
-export function SelectionBar({ activeTab }: SelectionBarProps) {
+export function SelectionBar({
+  activeTab,
+  onChangeActiveTab,
+}: SelectionBarProps) {
   const { t, i18n } = useTranslation("landing");
   const rtl = isRTL(i18n.resolvedLanguage);
 
@@ -36,15 +33,19 @@ export function SelectionBar({ activeTab }: SelectionBarProps) {
             <View style={styles.tabIndicator} />
           </View>
         ) : (
-          <Text
+          <Pressable
             key={tab.key}
-            style={[
-              styles.tabInactive,
-              rtl ? styles.textRtl : styles.textLtr,
-            ]}
+            onPress={() => onChangeActiveTab(tab.key)}
           >
-            {tab.label}
-          </Text>
+            <Text
+              style={[
+                styles.tabInactive,
+                rtl ? styles.textRtl : styles.textLtr,
+              ]}
+            >
+              {tab.label}
+            </Text>
+          </Pressable>
         )
       )}
     </View>

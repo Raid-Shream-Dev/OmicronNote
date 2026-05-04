@@ -1,15 +1,9 @@
-/**
- * Student Guide:
- * This file renders one task row in the tasks list.
- * It shows the checkbox, task title, task status, and delete action.
- * The component does not own task state itself; it only calls callbacks from its parent.
- * This makes it a clear example of prop-driven UI with small focused responsibilities.
- */
 import { Feather } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { isRTL } from "../../i18n";
+import { theme } from "../../Theme/color";
 import styles from "./style";
 import type { Tasks } from "./types";
 
@@ -24,13 +18,11 @@ export default function TaskItem({
   onToggleTask,
   onDeleteTask,
 }: TaskItemProps) {
-  // Reads task translations so status labels and accessibility text localize too.
   const { t, i18n } = useTranslation("tasks");
   const rtl = isRTL(i18n.resolvedLanguage);
 
   return (
     <View style={[styles.taskCard, rtl && styles.taskCardRtl]}>
-      {/* Tapping the checkbox toggles the task between pending and completed. */}
       <Pressable
         accessibilityRole="checkbox"
         accessibilityState={{ checked: task.completed }}
@@ -40,10 +32,8 @@ export default function TaskItem({
           task.completed && styles.checkboxCompleted,
         ]}
       >
-        {task.completed ? <Feather name="check" size={16} color="#101010" /> : null}
+        {task.completed ? <Feather name="check" size={16} color={theme.surface} /> : null}
       </Pressable>
-
-      {/* The middle section shows the task title and its current state. */}
       <View style={[styles.taskBody, rtl && styles.taskBodyRtl]}>
         <Text
           style={[
@@ -58,15 +48,12 @@ export default function TaskItem({
           {task.completed ? t("statusCompleted") : t("statusPending")}
         </Text>
       </View>
-
-      {/* Separate delete action keeps removal explicit and easy to reach. */}
       <Pressable
-        // Makes the delete accessibility label match the current language.
         accessibilityLabel={t("deleteTask", { title: task.title })}
         onPress={() => onDeleteTask(task.id)}
         style={styles.deleteButton}
       >
-        <Feather name="trash-2" size={18} color="#f5f5f5" />
+        <Feather name="trash-2" size={18} color={theme.ink} />
       </Pressable>
     </View>
   );
